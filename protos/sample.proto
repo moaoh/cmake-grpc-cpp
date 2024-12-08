@@ -2,14 +2,16 @@ syntax = "proto3";
 
 package sample;
 
+// 서비스 정의
 service SampleService {
-  rpc SampleMethod (SampleRequest) returns (SampleResponse) {}
+  rpc SayHello (SampleRequest) returns (SampleResponse);
 }
 
+// 메시지 정의
 message SampleRequest {
-  string request_sample_field = 1;
+  string name = 1;
 }
 
 message SampleResponse {
-  string response_sample_field = 1;
+  string message = 1;
 }

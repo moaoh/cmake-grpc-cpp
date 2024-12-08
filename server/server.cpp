@@ -1,28 +1,29 @@
 #include "server.hpp"
 
+// gRPC
 class SampleServiceImpl final : public SampleService::Service {
-    Status SampleMethod(ServerContext* context, const SampleRequest* request, SampleResponse* response) override {
-        response->set_response_sample_field("Hello " + request->request_sample_field());
-        return Status::OK;
+public:
+    grpc::Status SayHello(grpc::ServerContext* context, const SampleRequest* request, SampleResponse* response) override {
+        std::string name = request->name();
+        response->set_message("Hello, " + name + "!");
+        return grpc::Status::OK;
     }
 };
 
 void RunServer() {
-    std::string server_address{"localhost:2510"};
+    std::string server_address("0.0.0.0:50051");
     SampleServiceImpl service;
 
-    // Build server
-    ServerBuilder builder;
+    grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
-    std::unique_ptr<Server> server{builder.BuildAndStart()};
 
-    // Run server
+    std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;
     server->Wait();
 }
 
-int main(int argc, char** argv) {
+int main() {
     RunServer();
     return 0;
 }
